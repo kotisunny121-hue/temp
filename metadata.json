@@ -1,0 +1,6 @@
+{
+  "name": "NIO DeepOcean-Transformer: 3D Subsurface Temperature Reconstruction",
+  "description": "Satellite-to-subsurface ocean temperature AI framework for the Northern Indian Ocean using CNN-Transformer architecture (7 surface channels to 15 vertical depth layers).",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
