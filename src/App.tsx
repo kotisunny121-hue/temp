@@ -6,6 +6,7 @@ import { VerticalProfileModal } from './components/VerticalProfileModal';
 import { ArchitectureInspector } from './components/ArchitectureInspector';
 import { EvaluationBenchmark } from './components/EvaluationBenchmark';
 import { DataIngestionPipeline } from './components/DataIngestionPipeline';
+import { DatabaseExplorer } from './components/DatabaseExplorer';
 import { OceanCopilotModal } from './components/OceanCopilotModal';
 import { NetCDFExportModal } from './components/NetCDFExportModal';
 import {
@@ -35,7 +36,7 @@ import {
 
 export default function App() {
   const [activeTab, setActiveTab] = useState<
-    'map' | 'transect' | 'benchmark' | 'pipeline' | 'architecture'
+    'map' | 'transect' | 'benchmark' | 'pipeline' | 'architecture' | 'database'
   >('map');
 
   const [currentPreset, setCurrentPreset] = useState<SynopticEventPreset>(PRESET_EVENTS[0]);
@@ -91,34 +92,34 @@ export default function App() {
       />
 
       {/* Main Dynamic Viewport */}
-      <main className="flex-1 max-w-7xl w-full mx-auto p-4 lg:p-6 space-y-6">
+      <main className="flex-1 max-w-7xl w-full mx-auto p-4 lg:p-6 space-y-5">
         {/* Synoptic Scenario Quick Banner */}
-        <div className="bg-white border-2 border-black p-4 sm:p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3.5 shadow-[4px_4px_0px_#000000]">
-          <div className="flex items-center gap-3.5">
-            <div className="w-11 h-11 bg-black text-white border-2 border-black flex items-center justify-center shadow-[2px_2px_0px_#FF3B30] shrink-0">
-              <Compass className="w-6 h-6 text-white stroke-[2.5]" />
+        <div className="bg-white border-2 border-black p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 shadow-[3px_3px_0px_#000000]">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 bg-black text-white border-2 border-black flex items-center justify-center shadow-[2px_2px_0px_#FF3B30] shrink-0">
+              <Compass className="w-5 h-5 text-white stroke-[2.5]" />
             </div>
             <div>
               <div className="flex items-center gap-2 flex-wrap">
-                <span className="text-xs font-black text-[#FF3B30] uppercase tracking-wider font-mono">
+                <span className="text-[11px] font-black text-[#FF3B30] uppercase tracking-wider font-mono">
                   ACTIVE OCEAN EVENT:
                 </span>
-                <span className="text-xs font-mono font-black text-black bg-zinc-100 px-2 py-0.5 border border-black uppercase">
+                <span className="text-[10px] font-mono font-bold text-black bg-zinc-100 px-2 py-0.5 border border-black uppercase">
                   {currentPreset.dateStr}
                 </span>
               </div>
-              <h2 className="text-base sm:text-lg font-black text-black uppercase tracking-tight mt-0.5 font-display">
+              <h2 className="text-sm sm:text-base font-black text-black uppercase tracking-tight mt-0.5 font-display">
                 {currentPreset.title}
               </h2>
             </div>
           </div>
 
           {/* Key Physics Features Badges */}
-          <div className="flex flex-wrap items-center gap-2 text-xs">
+          <div className="flex flex-wrap items-center gap-1.5 text-xs">
             {currentPreset.keyFeatures.slice(0, 2).map((feat, i) => (
               <span
                 key={i}
-                className="px-3 py-1 bg-zinc-100 text-black border-2 border-black font-black uppercase text-[11px] tracking-wide shadow-[2px_2px_0px_#000000]"
+                className="px-2.5 py-1 bg-zinc-100 text-black border border-black font-mono font-bold uppercase text-[10px] tracking-wide"
               >
                 {feat}
               </span>
@@ -166,16 +167,18 @@ export default function App() {
           />
         )}
 
+        {activeTab === 'database' && <DatabaseExplorer />}
+
         {activeTab === 'pipeline' && <DataIngestionPipeline />}
       </main>
 
       {/* Footer */}
-      <footer className="border-t-2 border-black bg-white py-4 px-4 lg:px-6 text-center text-xs text-black font-mono font-bold uppercase tracking-wider shadow-[0px_-2px_0px_#000000]">
+      <footer className="border-t-2 border-black bg-white py-3.5 px-4 lg:px-6 text-center text-[11px] text-black font-mono font-bold uppercase tracking-wider shadow-[0px_-2px_0px_#000000]">
         <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-2">
           <span>
             NIO DeepOcean-Transformer • PyTorch CNN-Transformer (7 Channels &rarr; 15 Layers)
           </span>
-          <span className="text-zinc-600">Spatial Domain: 5°N–30°N, 45°E–105°E • 0.25° Grid</span>
+          <span className="text-zinc-600">PostgreSQL (Cloud SQL asia-southeast1) • Spatial: 5°N–30°N, 45°E–105°E (0.25°)</span>
         </div>
       </footer>
 

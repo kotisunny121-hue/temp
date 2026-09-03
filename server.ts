@@ -3,6 +3,19 @@ import path from "path";
 import dotenv from "dotenv";
 import { GoogleGenAI } from "@google/genai";
 import { createServer as createViteServer } from "vite";
+import {
+  getDbOverview,
+  getAllDatasets,
+  getAllGridPoints,
+  getAllDepthLevels,
+  getAllSamples,
+  getAllModels,
+  getAllExperiments,
+  getAllPredictions,
+  getValidationResults,
+  getOrCreateUser,
+} from "./src/db/queries.ts";
+import { seedDatabase } from "./src/db/seed.ts";
 
 dotenv.config();
 
@@ -38,9 +51,117 @@ app.get("/api/health", (_req, res) => {
     framework: "NIO DeepOcean-Transformer",
     channels: 7,
     depths: 15,
+    database: "PostgreSQL (Cloud SQL)",
     spatial_bounds: { lat: [5, 30], lon: [45, 105], resolution: 0.25 },
   });
 });
+
+// PostgreSQL Database Routes
+app.get("/api/db/overview", async (_req, res) => {
+  try {
+    const overview = await getDbOverview();
+    res.json({ success: true, ...overview });
+  } catch (err: any) {
+    console.error("DB Overview Error:", err);
+    res.status(500).json({ error: "Failed to query database overview." });
+  }
+});
+
+app.get("/api/db/datasets", async (_req, res) => {
+  try {
+    const data = await getAllDatasets();
+    res.json({ success: true, datasets: data });
+  } catch (err: any) {
+    res.status(500).json({ error: "Failed to fetch datasets." });
+  }
+});
+
+app.get("/api/db/grid-points", async (_req, res) => {
+  try {
+    const data = await getAllGridPoints();
+    res.json({ success: true, gridPoints: data });
+  } catch (err: any) {
+    res.status(500).json({ error: "Failed to fetch grid points." });
+  }
+});
+
+app.get("/api/db/depth-levels", async (_req, res) => {
+  try {
+    const data = await getAllDepthLevels();
+    res.json({ success: true, depthLevels: data });
+  } catch (err: any) {
+    res.status(500).json({ error: "Failed to fetch depth levels." });
+  }
+});
+
+app.get("/api/db/samples", async (_req, res) => {
+  try {
+    const data = await getAllSamples();
+    res.json({ success: true, samples: data });
+  } catch (err: any) {
+    res.status(500).json({ error: "Failed to fetch samples." });
+  }
+});
+
+app.get("/api/db/models", async (_req, res) => {
+  try {
+    const data = await getAllModels();
+    res.json({ success: true, models: data });
+  } catch (err: any) {
+    res.status(500).json({ error: "Failed to fetch models." });
+  }
+});
+
+app.get("/api/db/experiments", async (_req, res) => {
+  try {
+    const data = await getAllExperiments();
+    res.json({ success: true, experiments: data });
+  } catch (err: any) {
+    res.status(500).json({ error: "Failed to fetch experiments." });
+  }
+});
+
+app.get("/api/db/predictions", async (_req, res) => {
+  try {
+    const data = await getAllPredictions();
+    res.json({ success: true, predictions: data });
+  } catch (err: any) {
+    res.status(500).json({ error: "Failed to fetch predictions." });
+  }
+});
+
+app.get("/api/db/validation", async (_req, res) => {
+  try {
+    const data = await getValidationResults();
+    res.json({ success: true, validationResults: data });
+  } catch (err: any) {
+    res.status(500).json({ error: "Failed to fetch validation results." });
+  }
+});
+
+app.post("/api/db/seed", async (_req, res) => {
+  try {
+    const result = await seedDatabase();
+    res.json({ success: true, result });
+  } catch (err: any) {
+    console.error("Seed error:", err);
+    res.status(500).json({ error: err.message || "Failed to seed database" });
+  }
+});
+
+app.post("/api/db/user", async (req, res) => {
+  try {
+    const { uid, email } = req.body;
+    if (!uid || !email) {
+      return res.status(400).json({ error: "Missing uid or email" });
+    }
+    const user = await getOrCreateUser(uid, email);
+    res.json({ success: true, user });
+  } catch (err: any) {
+    res.status(500).json({ error: "Failed to register user" });
+  }
+});
+
 
 // AI Oceanographic Diagnostics Endpoint using Gemini
 app.post("/api/gemini/analyze", async (req, res) => {
